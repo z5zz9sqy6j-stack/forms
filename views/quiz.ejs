@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Quiz</title>
 </head>
 <body>
-    
+    <h1>Quiz Words</h1>
+
+    <% chosenWords.forEach(wordObj => { %>
+        <div style="margin-bottom: 20px;">
+            <h3><%= wordObj.word %></h3>
+            <p><strong>Part:</strong> <%= wordObj.part %></p>
+            <p><strong>Definition:</strong> <%= wordObj.def %></p>
+        </div>
+    <% }) %>
 </body>
 </html>
