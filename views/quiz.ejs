@@ -3,28 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz</title>
-</head>
-<body>
-    <h1>Quiz Words</h1>
+    <title>Word Quiz</title>
 
-    <table border="1" cellpadding="10">
-        <thead>
-            <tr>
-                <th>Word</th>
-                <th>Part of Speech</th>
-                <th>Definition</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% chosenWords.forEach(wordObj => { %>
-                <tr>
-                    <td><%= wordObj.word %></td>
-                    <td><%= wordObj.part %></td>
-                    <td><%= wordObj.def %></td>
-                </tr>
+    <% if (score !== null) { %>
+        <meta http-equiv="refresh" content="1; url=/quiz">
+    <% } %>
+</head>
+
+<body style="background-color: white; font-family: serif;">
+
+    <h1>Word Quiz!</h1>
+
+    <h2><%= correctWord %> - <%= correctPart %></h2>
+
+    <% if (score !== null) { %>
+        <h3><%= score %></h3>
+    <% } %>
+
+    <form action="/quiz" method="POST">
+
+        <input type="hidden" name="correctWord" value="<%= correctWord %>">
+        <input type="hidden" name="correctPart" value="<%= correctPart %>">
+        <input type="hidden" name="correctDef" value="<%= correctDef %>">
+
+        <ol>
+            <% definitions.forEach(function(definition) { %>
+                <li>
+                    <label>
+                        <input type="radio" name="selectedDef" value="<%= definition %>" required>
+                        <%= definition %>
+                    </label>
+                </li>
+
+                <input type="hidden" name="definitions" value="<%= definition %>">
             <% }) %>
-        </tbody>
-    </table>
+        </ol>
+
+        <% if (score === null) { %>
+            <button type="submit">Submit</button>
+        <% } %>
+
+    </form>
+
 </body>
 </html>

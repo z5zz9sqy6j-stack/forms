@@ -6,10 +6,47 @@ const path = require('path');
 router.get('/', async (req, res) => {
     try {
         const chosenWords = await getWords();
-        res.render('quiz', { chosenWords });
+
+        const correctLine = chosenWords[0];
+        const [correctWord, correctPart, correctDef] = correctLine.split('\t');
+
+        const definitions = chosenWords.map(line => {
+            const [word, part, def] = line.split('\t');
+            return def;
+        });
+
+        shuffle(definitions);
+
+        const score = req.query.score || null;
+
+        res.render('quiz', {
+            correctWord,
+            correctPart,
+            correctDef,
+            definitions,
+            score
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send('Error getting quiz words');
+    }
+});
+
+router.post('/', (req, res) => {
+    try {
+        const correctDef = req.body.correctDef;
+        const selectedDef = req.body.selectedDef;
+
+        let score = '0/1';
+
+        if (selectedDef === correctDef) {
+            score = '1/1';
+        }
+
+        res.redirect(`/quiz?score=${score}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error checking answer');
     }
 });
 
@@ -31,11 +68,7 @@ async function getWords() {
         const [word, part, def] = line.split('\t');
 
         if (part === randomPart) {
-            choices.push({
-                word,
-                part,
-                def
-            });
+            choices.push(line);
         }
     }
 
