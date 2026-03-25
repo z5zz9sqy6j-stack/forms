@@ -1,8 +1,9 @@
 const express = require('express');
 const app = express();
-const userRoutes = require('./routes/user');
+const userRoutes = require('./routes/users');
 const quizRoutes = require('./routes/quiz');
 app.use(express.static('public'));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
