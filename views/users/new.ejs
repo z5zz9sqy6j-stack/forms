@@ -1,17 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New User</title>
 </head>
 <body>
-<form action="/users" method="post">
-<label for="firstName">
-    First Name:
-<input type="text" name="firstName" value ="<%= locals.firstName %>">
-</label>
-<button type="submit">Submit</button>
-</form>
+    <h1>Add New User</h1>
+
+    <form action="/users" method="POST">
+        <div>
+            <label for="firstName">First Name:</label>
+            <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                value="<%= firstName || '' %>"
+            >
+        </div>
+
+        <br>
+
+        <div>
+            <label for="lastName">Last Name:</label>
+            <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value="<%= lastName || '' %>"
+            >
+        </div>
+
+        <br>
+
+        <div>
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender">
+                <option value="">Select Gender</option>
+                <option value="Male" <%= gender === 'Male' ? 'selected' : '' %>>Male</option>
+                <option value="Female" <%= gender === 'Female' ? 'selected' : '' %>>Female</option>
+                <option value="Other" <%= gender === 'Other' ? 'selected' : '' %>>Other</option>
+            </select>
+        </div>
+
+        <br>
+
+        <div>
+            <label for="age">Age:</label>
+            <input
+                type="number"
+                id="age"
+                name="age"
+                value="<%= age || '' %>"
+            >
+        </div>
+
+        <br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <br>
+    <a href="/users/list">Go to Users List</a>
 </body>
 </html>
