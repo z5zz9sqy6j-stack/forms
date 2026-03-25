@@ -4,45 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Quiz</title>
-
-    <% if (score !== null) { %>
-        <meta http-equiv="refresh" content="1; url=/quiz">
-    <% } %>
 </head>
-
 <body style="background-color: white; font-family: serif;">
 
-    <h1>Word Quiz!</h1>
+    <%
+        let questionCount = totalQuestions ?? 0;
+        let score = totalCorrect ?? 0;
+
+        let randomIndex = parseInt(Math.random() * chosenWords.length);
+        let chosenWord = chosenWords[randomIndex];
+        let [correctWord, correctPart, correctDef] = chosenWord.split('\t');
+    %>
+
+    <% if (questionCount == 0) { %>
+        <h1>Welcome to the word quiz!</h1>
+    <% } else { %>
+        <h1>Score: <%= score %> / <%= questionCount %></h1>
+    <% } %>
 
     <h2><%= correctWord %> - <%= correctPart %></h2>
 
-    <% if (score !== null) { %>
-        <h3><%= score %></h3>
-    <% } %>
-
     <form action="/quiz" method="POST">
-
-        <input type="hidden" name="correctWord" value="<%= correctWord %>">
-        <input type="hidden" name="correctPart" value="<%= correctPart %>">
-        <input type="hidden" name="correctDef" value="<%= correctDef %>">
-
         <ol>
-            <% definitions.forEach(function(definition) { %>
+            <% for (currentWord of chosenWords) { %>
+                <%
+                    let [word, part, def] = currentWord.split('\t');
+                %>
                 <li>
                     <label>
-                        <input type="radio" name="selectedDef" value="<%= definition %>" required>
-                        <%= definition %>
+                        <input type="radio" name="userChoice" value="<%= def %>" required>
+                        <%= def %>
                     </label>
                 </li>
-
-                <input type="hidden" name="definitions" value="<%= definition %>">
-            <% }) %>
+            <% } %>
         </ol>
 
-        <% if (score === null) { %>
-            <button type="submit">Submit</button>
-        <% } %>
+        <input type="hidden" name="correctDef" value="<%= correctDef %>">
+        <input type="hidden" name="totalQuestions" value="<%= questionCount %>">
+        <input type="hidden" name="totalCorrect" value="<%= score %>">
 
+        <input type="submit" value="Submit Answer!">
     </form>
 
 </body>

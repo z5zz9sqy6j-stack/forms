@@ -4,89 +4,66 @@ const fs = require('fs').promises;
 const path = require('path');
 
 router.get('/', async (req, res) => {
-    try {
-        const chosenWords = await getWords();
+    let chosenWords = await getWords();
+    let totalQuestions = req.query.totalQuestions || 0;
+    let totalCorrect = req.query.totalCorrect || 0;
 
-        const correctLine = chosenWords[0];
-        const [correctWord, correctPart, correctDef] = correctLine.split('\t');
-
-        const definitions = chosenWords.map(line => {
-            const [word, part, def] = line.split('\t');
-            return def;
-        });
-
-        shuffle(definitions);
-
-        const score = req.query.score || null;
-
-        res.render('quiz', {
-            correctWord,
-            correctPart,
-            correctDef,
-            definitions,
-            score
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error getting quiz words');
-    }
+    res.render('quiz', {
+        chosenWords,
+        totalQuestions,
+        totalCorrect
+    });
 });
 
 router.post('/', (req, res) => {
-    try {
-        const correctDef = req.body.correctDef;
-        const selectedDef = req.body.selectedDef;
+    let { userChoice, correctDef, totalQuestions, totalCorrect } = req.body;
 
-        let score = '0/1';
+    totalQuestions = parseInt(totalQuestions);
+    totalCorrect = parseInt(totalCorrect);
 
-        if (selectedDef === correctDef) {
-            score = '1/1';
-        }
+    totalQuestions++;
 
-        res.redirect(`/quiz?score=${score}`);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error checking answer');
+    if (userChoice === correctDef) {
+        totalCorrect++;
     }
+
+    res.redirect(`/quiz?totalQuestions=${totalQuestions}&totalCorrect=${totalCorrect}`);
 });
 
-async function getWords() {
-    const randomPart = getRandomPart();
-    const filePath = path.join(__dirname, '../resources/allwords.txt');
-    const allWords = await fs.readFile(filePath, 'utf-8');
+let getWords = async () => {
+    let randomPart = getRandomPart();
+    let filePath = path.join(__dirname, '../resources/allwords.txt');
+    let allWords = await fs.readFile(filePath, 'utf-8');
 
-    const wordsArray = allWords
-        .split('\n')
-        .filter(line => line.trim() !== '');
+    let wordArray = allWords.split('\n').filter(line => line.trim() !== '');
+    shuffle(wordArray);
 
-    shuffle(wordsArray);
+    let chosenWords = [];
 
-    const choices = [];
-
-    while (choices.length < 5 && wordsArray.length > 0) {
-        const line = wordsArray.pop();
-        const [word, part, def] = line.split('\t');
+    while (chosenWords.length < 5 && wordArray.length > 0) {
+        let currentWord = wordArray.pop();
+        let [word, part, def] = currentWord.split('\t');
 
         if (part === randomPart) {
-            choices.push(line);
+            chosenWords.push(currentWord);
         }
     }
 
-    return choices;
-}
+    return chosenWords;
+};
 
-function getRandomPart() {
-    const parts = ['noun', 'verb', 'adjective'];
-    const randomIndex = Math.floor(Math.random() * parts.length);
+let getRandomPart = () => {
+    let parts = ['noun', 'verb', 'adjective'];
+    let randomIndex = parseInt(Math.random() * parts.length);
     return parts[randomIndex];
-}
+};
 
-function shuffle(array) {
+let shuffle = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
-        const randomNumber = Math.floor(Math.random() * (i + 1));
-        [array[i], array[randomNumber]] = [array[randomNumber], array[i]];
+        let randomIndex = parseInt(Math.random() * (i + 1));
+        [array[i], array[randomIndex]] = [array[randomIndex], array[i]];
     }
     return array;
-}
+};
 
 module.exports = router;
